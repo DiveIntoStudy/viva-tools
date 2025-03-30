@@ -44,6 +44,17 @@ frontend/
 └── vite.config.ts         # Vite 설정
 ```
 
+### Infra
+
+```
+infra/
+├── environments
+│   └── dev
+└── modules
+    ├── s3
+    └── terraform_state
+```
+
 ## 실행 방법
 
 ### Backend
@@ -75,6 +86,33 @@ npm install
 npm run dev
 ```
 
+### Infra
+
+```bash
+# AWS 프로파일 설정
+# 테라폼은 tf 프로파일을 사용하여 AWS 리소스에 접근합니다
+aws configure --profile viva-tools-dev
+
+cd infra/environments/dev
+
+# 테라폼 초기화
+terraform init
+
+# 배포 계획 확인
+terraform plan
+
+# 인프라 배포
+terraform apply
+```
+
+- 테라폼으로 생성된 S3 버킷은 정적 웹 호스팅이 활성화되어 있습니다. 프론트엔드 빌드 결과물을 직접 업로드하려면
+
+```bash
+cd frontend
+npm run build
+aws s3 sync build/ s3://viva-tools-frontend-dev --delete --profile viva-tools-dev
+```
+
 클라이언트는 http://localhost:3000 에서 실행됩니다.
 
 ## 기술 스택
@@ -94,3 +132,7 @@ npm run dev
 - Vite
 - Material-UI
 - Axios
+
+### Infra
+
+- Terraform
