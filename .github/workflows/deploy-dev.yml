@@ -47,8 +47,15 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr
         
-      - name: 백엔드 Docker 이미지 빌드 및 푸시
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: viva-tools-dev
+          IMAGE_TAG: latest
         run: |
           cd backend
-          docker build -t 782688716299.dkr.ecr.ap-northeast-2.amazonaws.com/viva-tools-dev:latest .
-          docker push 782688716299.dkr.ecr.ap-northeast-2.amazonaws.com/viva-tools-dev:latest
+          docker buildx build --push --platform linux/amd64,linux/arm64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
