@@ -1,4 +1,4 @@
-name: AWS S3 배포
+name: AWS S3 배포 및 Backend ECR 배포
 
 on:
   push:
@@ -42,3 +42,13 @@ jobs:
       - name: S3에 배포
         run: |
           aws s3 sync frontend/build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+
+      - name: ECR 로그인
+        uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+        
+      - name: 백엔드 Docker 이미지 빌드 및 푸시
+        run: |
+          cd backend
+          docker build -t 782688716299.dkr.ecr.ap-northeast-2.amazonaws.com/viva-tools-dev:latest .
+          docker push 782688716299.dkr.ecr.ap-northeast-2.amazonaws.com/viva-tools-dev:latest
